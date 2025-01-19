@@ -3,6 +3,7 @@
 """
 
 import typing
+from typing import IO
 import requests
 
 
@@ -79,8 +80,8 @@ class SpotifyUnit:
         """
         return self.sp.playlist(playlist_id)
 
-    def song_photo_download(self, songJSON: typing.Dict):
-        song = songJSON["track"]
+    def song_photo_download(self, song_json: typing.Dict, fd: IO) -> None:
+        song = song_json["track"]
         picture_url = song["album"]["images"][-2]["url"]
         song_name = song["name"]
 
@@ -99,6 +100,8 @@ class SpotifyUnit:
             stroke_width=3,
             font=font,
         )
+
+        fd.write(f"Song: {song_name}\n")
 
         album_cover.save(f"./pics/{song_name}.png")
 
@@ -124,7 +127,9 @@ INITIAL_PLAYLIST_ID = "588iUCnGGcUQ8uw3GAWj2E"
 song_catalog_json = spUnit.get_playlist(playlist_id=INITIAL_PLAYLIST_ID)["tracks"]
 
 
+song_list_file = open("./songList.txt", "w")
+
 while song_catalog_json:
     for songJSON in song_catalog_json["items"]:
-        spUnit.song_photo_download(songJSON=songJSON)
+        spUnit.song_photo_download(song_json=songJSON, fd=song_list_file)
     song_catalog_json = spUnit.next(song_catalog_json)
