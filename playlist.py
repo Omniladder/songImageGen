@@ -81,7 +81,7 @@ class SpotifyUnit:
 
     def song_photo_download(self, songJSON: typing.Dict):
         song = songJSON["track"]
-        picture_url = song["album"]["images"][0]["url"]
+        picture_url = song["album"]["images"][-2]["url"]
         song_name = song["name"]
 
         album_cover_data = requests.get(picture_url, timeout=10).content
@@ -90,9 +90,9 @@ class SpotifyUnit:
 
         album_cover_drawer = ImageDraw.Draw(album_cover)
 
-        font = ImageFont.truetype("./Arial.ttf", size=50)
+        font = ImageFont.truetype("./Arial.ttf", size=15)
         album_cover_drawer.text(
-            (0, 50),
+            (0, 0),
             song_name,
             fill="black",
             stroke_fill="white",
@@ -123,12 +123,6 @@ INITIAL_PLAYLIST_ID = "588iUCnGGcUQ8uw3GAWj2E"
 
 song_catalog_json = spUnit.get_playlist(playlist_id=INITIAL_PLAYLIST_ID)["tracks"]
 
-"""
-print(song_catalog_json["tracks"].keys())
-
-file = open("./songCatalog", "w")
-json.dump(song_catalog_json, file)
-"""
 
 while song_catalog_json:
     for songJSON in song_catalog_json["items"]:
